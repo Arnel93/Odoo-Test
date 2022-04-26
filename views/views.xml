@@ -1,0 +1,356 @@
+<odoo>
+  <data>
+
+      <record id="product_template_only_form_view_inherit" model="ir.ui.view">
+            <field name="name">product.template.inherit</field>
+            <field name="model">product.template</field>
+                <field name="inherit_id" ref="product.product_template_form_view"/>
+            <field name="arch" type="xml">
+
+                <group name="bill" position="inside">
+                    <field name="importacion"/>
+                </group>
+
+
+            </field>
+        </record>
+
+
+      <record id="view_partner_property_form_inherit" model="ir.ui.view">
+            <field name="name">res.partner.purchase.property.form2.inherit</field>
+            <field name="model">res.partner</field>
+                <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+
+                <group name="purchase" position="inside">
+
+                    <field name="importacion"/>
+
+                </group>
+
+
+            </field>
+        </record>
+
+
+      <record id="view_freight_operation_form_inherit" model="ir.ui.view">
+            <field name="name">freight.operation.form.inherit</field>
+            <field name="model">freight.operation</field>
+                <field name="inherit_id" ref="freight.view_freight_operation_form"/>
+            <field name="arch" type="xml">
+
+
+                <xpath expr="//field[@name='direction']" position="after">
+
+                    <field name="regimen_importacion" />
+                    <field name="tipo_aforo"/>
+
+                </xpath>
+
+
+                <xpath expr="//field[@name='incoterm']" position="after">
+
+                    <button name="action_open_costes" type="object" class="oe_link" string="Prorrateo de costos">
+
+                        </button>
+
+                </xpath>
+
+
+
+                    <xpath expr="//notebook" position="attributes">
+
+                    <attribute name="invisible">1</attribute>
+
+                </xpath>
+
+
+                <xpath expr="//notebook" position="after">
+
+                    <notebook name="note_operation2">
+                            <page string="Pedido de compra">
+
+                                    <field name="pedidos" readonly="1" >
+                                    <tree create="0" delete="0"  edit="0" >
+
+                                  <field name="name"/>
+
+                                </tree>
+
+
+                                </field>
+
+
+
+                            </page>
+
+                            <page string="Recepción">
+
+                                    <field name="transferencia" readonly="1">
+
+                                        <tree create="0" delete="0"  edit="0" >
+
+                                      <field name="name"/>
+
+                                    </tree>
+
+
+                                    </field>
+
+
+
+                                </page>
+
+
+                        <page string="Factura">
+
+                                    <field name="factura" readonly="1">
+
+                                        <tree create="0" delete="0"  edit="0" >
+
+                                      <field name="name"/>
+
+                                    </tree>
+
+
+                                    </field>
+
+
+
+                                </page>
+
+                        <page string="Pagos">
+
+                        </page>
+
+                        <page string="Liquidación">
+
+                        </page>
+                    </notebook>
+
+
+                </xpath>
+
+
+            </field>
+        </record>
+
+
+      <record id="view_freight_costes_form_inherit" model="ir.ui.view">
+            <field name="name">stock.landed.cost.form.inherit</field>
+            <field name="model">stock.landed.cost</field>
+                <field name="inherit_id" ref="stock_landed_costs.view_stock_landed_cost_form"/>
+            <field name="arch" type="xml">
+
+
+                <xpath expr="//field[@name='vendor_bill_id']" position="after">
+
+                    <field name="coste_rel" attrs= "{'invisible': True}" />
+                    <field name="lote_rell" attrs= "{'invisible': True}" />
+                    <field name="lote_id" attrs= "{'invisible': True}" />
+
+                    <field name="lote_rel" attrs= "{'invisible': True}" />
+
+                    <field name="lote_coste" attrs= "{'readonly': [('coste_rel', '=', True)]}"
+                           domain="['|',
+                           '&amp;',('stage_id', '!=', 'Cancelado'),('id', '=', lote_id),
+                           ('freig_rel', '=', lote_rell)]" />
+
+                </xpath>
+
+
+                <field name="picking_ids"  position="replace" >
+
+                    <field name="picking_ids" widget="many2many_tags"
+                options="{'no_create_edit': True}" attrs="{'invisible': [('target_model', '!=', 'picking')]}"
+                 domain="['|','&amp;',
+                                '&amp;',
+                                 ('company_id', '=', company_id), ('move_lines.stock_valuation_layer_ids', '!=', False)
+                 ,('stock_lote', '=', lote_coste),('lote_rel2', '=', lote_rel)]"/>
+
+                </field>
+
+
+                <field name="vendor_bill_id"  position="replace" >
+
+                    <field name="vendor_bill_id"
+                options="{'no_create_edit': True}"
+                 domain="[('move_type', '=', 'in_invoice'), ('account_lote', '=', lote_coste)]"/>
+                </field>
+
+
+            </field>
+        </record>
+
+
+      <record id="view_freight_purchase_order_form_inherit" model="ir.ui.view">
+            <field name="name">purchase.order.form.inherit</field>
+            <field name="model">purchase.order</field>
+                <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+
+                <field name='partner_ref' position="after">
+
+                    <field name="importacion_rel" attrs="{'invisible': True}"/>
+
+                    <field name="lote_importacion"
+                    attrs="{'invisible': [('importacion_rel', '=', False)]}"/>
+
+
+                    </field>
+
+
+            </field>
+        </record>
+
+
+      <record id="view_freight_stock_lote_form_inherit" model="ir.ui.view">
+            <field name="name">stock.picking.form.inherit</field>
+            <field name="model">stock.picking</field>
+                <field name="inherit_id" ref="stock.view_picking_form"/>
+            <field name="arch" type="xml">
+
+
+                <field name='origin' position="after">
+
+                    <field name="stock_rel" attrs="{'invisible': True}"/>
+                    <field name="stock_lote" attrs="{'invisible': [('stock_rel', '=', False)],'readonly':True}"/>
+
+                    </field>
+
+
+
+            </field>
+
+      </record>
+
+
+      <record id="view_freight_account_factura_lote_form_inherit" model="ir.ui.view">
+            <field name="name">account.move.form.inherit</field>
+            <field name="model">account.move</field>
+                <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+
+
+                <field name='partner_bank_id' position="after">
+
+                    <field name="account_rel" attrs="{'invisible': True}"/>
+                    <field name="account_rel2" attrs="{'invisible': True}"/>
+                    <field name="account_lote" attrs="{'required': [('account_rel', '=', True)],'readonly':[('account_rel2', '=', True)]}"/>
+
+                    </field>
+
+
+            </field>
+
+      </record>
+
+
+
+      <record id="view_regimen_tree" model="ir.ui.view">
+            <field name="name">regimen.importacion</field>
+            <field name="model">regimen.importacion</field>
+            <field name="arch" type="xml">
+
+                <tree >
+
+                      <field name="name" optional="show"/>
+
+                        <field name="type" optional="show"/>
+
+                       <field name="date_regimen" optional="show"/>
+
+
+                </tree>
+
+            </field>
+        </record>
+
+      <record model="ir.actions.act_window" id="view_freight_regimen_importaciones">
+            <field name="name">Régimen de Importaciones</field>
+            <field name="res_model">regimen.importacion</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a Régimen de Importaciones.
+                </p>
+            </field>
+        </record>
+
+
+
+      <record id="view_aforo_tree" model="ir.ui.view">
+            <field name="name">tipo.aforo</field>
+            <field name="model">tipo.aforo</field>
+            <field name="arch" type="xml">
+                <tree >
+
+                      <field name="name" optional="show"/>
+
+
+                </tree>
+
+            </field>
+        </record>
+
+      <record model="ir.actions.act_window" id="view_freight_tipo_aforo">
+            <field name="name">Tipos de Aforo</field>
+            <field name="res_model">tipo.aforo</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a Tipos de Aforo.
+                </p>
+            </field>
+        </record>
+
+
+
+      <record model="ir.actions.act_window" id="action_view_freight_lote">
+            <field name="name">Lotes</field>
+            <field name="res_model">freight.operation</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="oe_view_nocontent_create">
+                    Click to create a Lote.
+                </p>
+            </field>
+        </record>
+
+
+
+
+      <menuitem name="Importaciones Locales" id="freight.freight_root"
+      web_icon="freight,static/description/icon.png"
+      sequence="1"/>
+
+
+
+      <menuitem name="All Shipments"
+               parent="freight.freight_operations"
+               id="freight_all_operation"
+               action="freight.view_freight_operation_all_action" sequence="5"/>
+
+
+      <menuitem name="Lote"
+               parent="freight.freight_operations"
+               id="freight_lote"
+               action="action_view_freight_lote" sequence="7"/>
+
+
+      <menuitem name="Regimen de Importaciones"
+               parent="freight.freight_configuration"
+               id="menu_freight_regimen_importaciones"
+               action="view_freight_regimen_importaciones" sequence="7"/>
+
+
+      <menuitem name="Tipos de Aforo"
+               parent="freight.freight_configuration"
+               id="menu_freight_tipo_aforo"
+               action="view_freight_tipo_aforo" sequence="7"/>
+
+
+
+  </data>
+
+</odoo>
