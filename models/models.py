@@ -4,6 +4,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 
 
+
 class RegimenImportacion(models.Model):
     _name = 'regimen.importacion'
     _description = 'Regimen de Importaciones'
